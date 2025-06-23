@@ -5,20 +5,42 @@ import { useState } from "react";
 // as it is a bootstrap component, not a react-bootstrap component
 
 const Signup = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
     setError("");
-    // Haven't implemented the signup logic yet
-    // send to backend and update user table in mysql database
+    try {
+      const res = await fetch("http://localhost:8080/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Signup failed");
+      }
+    } catch (error) {
+      setError("An error occurred while signing up");
+    }
     console.log("Form submitted");
+    // user made so redirect to sign in page
   };
 
   return (
@@ -41,6 +63,8 @@ const Signup = () => {
                   type="text"
                   placeholder="Enter first name"
                   required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
               <div className="flex-fill">
@@ -50,13 +74,21 @@ const Signup = () => {
                   type="text"
                   placeholder="Enter last name"
                   required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
             </div>
           </Form.Group>
           <Form.Group controlId="formBasicEmail" className="mb-3">
             <Form.Label>Email address *</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" required />
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </Form.Group>
           <Form.Group controlId="formBasicPassword" className="mb-3">
             <Form.Label>Password *</Form.Label>

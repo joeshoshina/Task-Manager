@@ -1,58 +1,27 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
-import mysql from "mysql2";
+import { createUser } from "./database.js"; // Adjust the import path as necessary
 
-dotenv.config();
-
-const pool = mysql
-  .createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  })
-  .promise();
-
-async function getUsers() {
-  try {
-    const [rows] = await pool.query("SELECT * FROM users");
-    return rows;
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    throw error;
-  }
-}
-// [row] is the same as row = result[0], called destructuring
-// not ${id} because we are using a prepared statement, dont want sql injection
-async function getUser(id) {
-  try {
-    const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
-    return rows[0];
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
-  }
-}
-
-async function createUser(email, password, first_name, last_name) {
-  try {
-    const [result] = await pool.query(
-      "INSERT INTO users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)",
-      [email, password, first_name, last_name]
-    );
-    return result.insertId; // Return the ID of the newly created user
-  } catch (error) {
-    console.error("Error creating user:", error);
-    throw error;
-  }
-}
-createUser("jumana@ucsd.edu", "dirtyTrident123!", "Jose", "Umana");
-const result = await getUsers();
-console.log(result);
-
-// testing sql connection so stopping the server after this
 const app = express();
+const PORT = process.env.PORT || 8080; // Default port for local development
+
 app.use(cors());
-app.use(express.json());
-await pool.end();
+app.use(express.json()); // Middleware to parse JSON bodies
+
+// hash password befor storing in database
+app.post("/api/signup", async (req, res) => {
+  const { email, password, firstName, lastName } = req.body;
+  if (!email || !password || !firstName || !lastName) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+  try {
+    const userId = await createUser(email, password, firstName, lastName);
+    res.status(201).json({ message: "User created", userId });
+  } catch (error) {
+    res.status(500).json({ error: "Error creating user." });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
