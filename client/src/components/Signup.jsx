@@ -1,5 +1,5 @@
 import { Container, Card, Form, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 // controlId sets both id and htmlFor attributes for better accessibility, couldn't use when wrapping in div must be done in Form.Group className
 // as it is a bootstrap component, not a react-bootstrap component
@@ -11,6 +11,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,12 +36,14 @@ const Signup = () => {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Signup failed");
+        return;
       }
+      navigate("/signin");
+      console.log("Form submitted");
     } catch (error) {
       setError("An error occurred while signing up");
+      return;
     }
-    console.log("Form submitted");
-    // user made so redirect to sign in page
   };
 
   return (
@@ -110,7 +113,7 @@ const Signup = () => {
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
-                setError(""); //Reset error
+                setError("");
               }}
               //Preventing copy, cut, and paste to ensure password security
               onCopy={(e) => e.preventDefault()}

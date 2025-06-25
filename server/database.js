@@ -23,15 +23,7 @@ export async function getUsers() {
 }
 // [row] is the same as row = result[0], called destructuring
 // not ${id} because we are using a prepared statement, dont want sql injection
-export async function getUser(id) {
-  try {
-    const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
-    return rows[0];
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
-  }
-}
+
 // param had to match frontend form
 export async function createUser(email, password, firstName, lastName) {
   try {
@@ -44,7 +36,19 @@ export async function createUser(email, password, firstName, lastName) {
     console.error("Error creating user:", error);
     throw error;
   }
+} // gotta add user exits case and also add that to backend so forntend shows proper error message
+
+export async function getUser(email) {
+  try {
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+    if (rows.length === 0) {
+      throw new Error("User not found");
+    }
+    return rows[0];
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw error;
+  }
 }
-// createUser("jumana@ucsd.edu", "dirtyTrident123!", "Jose", "Umana");
-// const result = await getUsers();
-// console.log(result);

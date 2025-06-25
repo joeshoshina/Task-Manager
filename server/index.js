@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
-import { createUser } from "./database.js";
+import { createUser, getUser } from "./database.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -20,6 +20,29 @@ app.post("/api/signup", async (req, res) => {
     res.status(201).json({ message: "User created", userId });
   } catch (error) {
     res.status(500).json({ error: "Error creating user." });
+  }
+});
+
+app.post("/api/signin", async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required." });
+  }
+  try {
+    const user = await getUser(email);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    } else if (await bcrypt.compare(password, user.password)) {
+      res.status(200).json({ message: "Sign-in successful", userId: user.id });
+    } else {
+      res.status(401).json({ error: "Invalid password." });
+    }
+  } catch (error) {
+    if (error.message === "User not found") {
+      return res.status(400).json({ error: "User not found" });
+    }
+    console.error("Signin error:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
