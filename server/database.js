@@ -33,6 +33,10 @@ export async function createUser(email, password, firstName, lastName) {
     );
     return result.insertId; // Return the ID of the newly created user
   } catch (error) {
+    // mysql2 throws error.code/errno; can't check email after failed insert
+    if (error.code === "ER_DUP_ENTRY" || error.errno === 1062) {
+      throw new Error("User already exists");
+    }
     console.error("Error creating user:", error);
     throw error;
   }

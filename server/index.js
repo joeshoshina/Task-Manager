@@ -19,9 +19,13 @@ app.post("/api/signup", async (req, res) => {
     const userId = await createUser(email, hashedPassword, firstName, lastName);
     res.status(201).json({ message: "User created", userId });
   } catch (error) {
-    res.status(500).json({ error: "Error creating user." });
+    if (error.message === "User already exists") {
+      return res.status(409).json({ error: "User already exists." });
+    }
+    console.error("Signup error:", error);
+    return res.status(500).json({ error: "Error creating user." });
   }
-});
+}); // case for user already exists, message will be made by db function
 
 app.post("/api/signin", async (req, res) => {
   const { email, password } = req.body;
