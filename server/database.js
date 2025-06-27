@@ -40,7 +40,7 @@ export async function createUser(email, password, firstName, lastName) {
     console.error("Error creating user:", error);
     throw error;
   }
-} // gotta add user exits case and also add that to backend so forntend shows proper error message
+}
 
 export async function getUser(email) {
   try {

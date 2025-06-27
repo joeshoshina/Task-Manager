@@ -25,7 +25,7 @@ app.post("/api/signup", async (req, res) => {
     console.error("Signup error:", error);
     return res.status(500).json({ error: "Error creating user." });
   }
-}); // case for user already exists, message will be made by db function
+});
 
 app.post("/api/signin", async (req, res) => {
   const { email, password } = req.body;
