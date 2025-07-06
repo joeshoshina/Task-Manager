@@ -10,7 +10,7 @@ import NotFoundPage from "./components/NotFoundPage.jsx";
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/signin", element: <Signin /> },
-  { path: "/signup", element: <Signup /> }, // Reusing Login component for signup
+  { path: "/signup", element: <Signup /> },
   { path: "*", element: <NotFoundPage /> },
 ]);
 

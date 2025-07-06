@@ -16,6 +16,7 @@ const Signin = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // for the cookie
         body: JSON.stringify({
           email,
           password,
