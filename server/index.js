@@ -70,7 +70,13 @@ app.post("/api/signin", async (req, res) => {
   }
   try {
     const user = await getUser(email);
-
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Invalid password." });
+    }
     /* adding JWT logic here */
     // access and refresh tokens have to be implemented later on
     const id = user.id;
@@ -80,26 +86,19 @@ app.post("/api/signin", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // COME BACK FOR .ENV MAYBE AS NODE_ENV === 'production'
-      sameSite: "Strict",
+      secure: false, // make true in production
+      sameSite: "Strict", // set "None" when deploying since I will use Netlify for frontend and Render for backend
       maxAge: 15 * 60 * 1000,
     });
 
     const { password: _, ...userSafe } = user;
     res.status(200).json({ auth: true, user: userSafe });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    } else if (await bcrypt.compare(password, user.password)) {
-      res.status(200).json({ message: "Sign-in successful", userId: user.id });
-    } else {
-      res.status(401).json({ error: "Invalid password." });
-    }
   } catch (error) {
     if (error.message === "User not found") {
       return res.status(400).json({ error: "User not found" });
     }
     console.error("Signin error:", error);
+    // low severity error, need error cleared in frontend when user tries to sign in again
     return res.status(500).json({ error: "Internal server error" });
   }
 });
