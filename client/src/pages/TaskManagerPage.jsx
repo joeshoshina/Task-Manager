@@ -28,8 +28,8 @@ const TaskManagerPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div className="flex flex-col min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-8 flex-grow">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             Task Manager
@@ -39,31 +39,27 @@ const TaskManagerPage = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Calendar - spans 2 columns on large screens */}
-          <div className="lg:col-span-2">
+        <div className="flex flex-col lg:flex-row gap-6 w-full h-full">
+          {/* Left: Calendar + TaskManagement (stacked vertically) */}
+          <div className="flex flex-col flex-1 gap-6">
             <Calendar
               selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
+              onDateChange={setSelectedDate}
               tasks={tasks}
             />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <FinishedTasksSidebar
-              finishedTasks={finishedTasks}
-              onRemoveFinished={onRemoveFinished}
-            />
-          </div>
-
-          {/* Task Management - spans 3 columns on large screens */}
-          <div className="lg:col-span-3">
             <TaskManagement
               selectedDate={selectedDate}
               tasks={tasks}
               onAddTask={onAddTask}
               onDeleteTask={onDeleteTask}
+            />
+          </div>
+
+          {/* Right: Finished Tasks Sidebar */}
+          <div className="w-full lg:w-[300px]">
+            <FinishedTasksSidebar
+              finishedTasks={finishedTasks}
+              onRemoveFinished={onRemoveFinished}
             />
           </div>
         </div>
