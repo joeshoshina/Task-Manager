@@ -95,7 +95,7 @@ const Calendar = ({ selectedDate, onDateChange, tasks }) => {
             onClick={() =>
               onDateChange(new Date(currentYear, currentMonth - 1, 1))
             }
-            className="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
+            className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
           >
             Prev
           </button>
@@ -103,7 +103,7 @@ const Calendar = ({ selectedDate, onDateChange, tasks }) => {
             onClick={() =>
               onDateChange(new Date(currentYear, currentMonth + 1, 1))
             }
-            className="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
+            className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
           >
             Next
           </button>
