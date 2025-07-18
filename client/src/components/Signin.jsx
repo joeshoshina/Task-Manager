@@ -25,7 +25,7 @@ const Signin = () => {
       const data = await res.json();
       if (res.ok) {
         console.log("Sign-in successful:", data);
-        // navigate to homepage
+        navigate("/task-manager");
       } else {
         setError(data.error || "Sign-in failed");
         console.error("Sign-in error:", data.error);
